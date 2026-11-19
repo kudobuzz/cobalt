@@ -1,0 +1,56 @@
+# Builds the cobalt API image and deploys the `cobalt` chart (kb-charts) to kudobuzz-prod.
+# Docker with BuildKit, not kaniko: the Dockerfile uses `RUN --mount=type=cache`.
+# Build context is the repo root (pnpm workspace); the image copies .git for the version on GET /.
+steps:
+  - id: Build
+    name: gcr.io/cloud-builders/docker
+    env: ['DOCKER_BUILDKIT=1']
+    args:
+      [
+        "build",
+        "--tag", "${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE_NAME}:$COMMIT_SHA",
+        "--file", "Dockerfile",
+        "."
+      ]
+
+  - id: Push
+    name: gcr.io/cloud-builders/docker
+    waitFor: [Build]
+    args: ["push", "${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_IMAGE_NAME}:$COMMIT_SHA"]
+
+  - name: '${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_HELM_REPOSITORY}/${_HELM_IMAGE_NAME}:latest'
+    id: Pull Cobalt Chart
+    waitFor: [Push]
+    args:
+      [
+        "pull",
+        "oci://${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_HELM_REPOSITORY}/cobalt",
+        "--version", "1.0.0",
+        "--untar",
+        "--untardir", "cobalt-temp"
+      ]
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=kudobuzz-prod'
+
+  - name: '${_LOCATION}-docker.pkg.dev/$PROJECT_ID/${_HELM_REPOSITORY}/${_HELM_IMAGE_NAME}:latest'
+    id: Deploy Cobalt Helm Release
+    waitFor: [Pull Cobalt Chart]
+    args:
+      [
+        "upgrade", "--install", "cobalt",
+        "./cobalt-temp/cobalt",
+        "--namespace", "socialreviews",
+        "--values", "./cobalt-temp/cobalt/values/prod.yaml",
+        "--set-string", "image.tag=$COMMIT_SHA"
+      ]
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=kudobuzz-prod'
+
+substitutions:
+  _REPOSITORY: kb
+  _LOCATION: us-central1
+  _IMAGE_NAME: cobalt
+  _HELM_REPOSITORY: kb-charts
+  _HELM_IMAGE_NAME: helm
