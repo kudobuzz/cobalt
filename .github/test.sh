@@ -39,7 +39,7 @@ test_api() {
 }
 
 setup_api() {
-    export API_PORT=3000
+    export PORT=3000
     export API_URL=http://localhost:3000
     timeout 10 pnpm run --prefix api start &
     API_PID=$!
