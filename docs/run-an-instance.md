@@ -44,7 +44,7 @@ requirements:
 2. go to api directory: `cd cobalt/api`.
 3. install dependencies: `pnpm install`.
 4. create `.env` file in the same directory.
-5. add needed environment variables to `.env` file. only `API_URL` is required to run cobalt.
+5. add needed environment variables to `.env` file. none are required; set `API_URL` to the address your instance is reachable at.
     - if you don't know what api url to use for local development, use `http://localhost:9000/`.
 6. run cobalt: `pnpm start`.
 
