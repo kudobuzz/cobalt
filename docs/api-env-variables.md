@@ -1,11 +1,11 @@
 # cobalt api instance environment variables
-you can customize your processing instance's behavior using these environment variables. all of them but `API_URL` are optional.
+you can customize your processing instance's behavior using these environment variables. all of them are optional.
 this document is not final and will expand over time. feel free to improve it!
 
 ### general vars
 | name                   | default | value example                         |
 |:-----------------------|:--------|:--------------------------------------|
-| API_URL                |         | `https://api.url.example/`            |
+| API_URL                | `http://localhost:<API_PORT>/` | `https://api.url.example/` |
 | API_PORT               | `9000`  | `1337`                                |
 | COOKIE_PATH            |         | `/cookies.json`                       |
 | PROCESSING_PRIORITY    |         | `10`                                  |
@@ -77,7 +77,7 @@ this document is not final and will expand over time. feel free to improve it!
 
 ### API_URL
 > [!NOTE]
-> API_URL is required to run the API instance.
+> if API_URL is not set, it defaults to `http://localhost:<API_PORT>/`. tunnel links are built from it, so a caller that reaches the instance at another address has to keep the tunnel's path and query and send them to that address.
 
 the URL from which your instance will be accessible. can be external or internal, but it must be a valid URL or else tunnels will not work.
 

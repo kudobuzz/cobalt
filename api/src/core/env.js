@@ -60,7 +60,9 @@ export const loadEnvs = (env = process.env) => {
     }
 
     return {
-        apiURL: env.API_URL || '',
+        // defaults to the instance's own port; tunnel links then use this host,
+        // so callers that reach the instance at another address must rebase them.
+        apiURL: env.API_URL || `http://localhost:${env.API_PORT || 9000}/`,
         apiPort: env.API_PORT || 9000,
         tunnelPort: env.API_PORT || 9000,
 
