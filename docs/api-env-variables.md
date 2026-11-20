@@ -5,8 +5,8 @@ this document is not final and will expand over time. feel free to improve it!
 ### general vars
 | name                   | default | value example                         |
 |:-----------------------|:--------|:--------------------------------------|
-| API_URL                | `http://localhost:<API_PORT>/` | `https://api.url.example/` |
-| API_PORT               | `9000`  | `1337`                                |
+| API_URL                | `http://localhost:<PORT>/` | `https://api.url.example/` |
+| PORT                   | `9000`  | `1337`                                |
 | COOKIE_PATH            |         | `/cookies.json`                       |
 | PROCESSING_PRIORITY    |         | `10`                                  |
 | API_INSTANCE_COUNT     |         | `6`                                   |
@@ -77,13 +77,13 @@ this document is not final and will expand over time. feel free to improve it!
 
 ### API_URL
 > [!NOTE]
-> if API_URL is not set, it defaults to `http://localhost:<API_PORT>/`. tunnel links are built from it, so a caller that reaches the instance at another address has to keep the tunnel's path and query and send them to that address.
+> if API_URL is not set, it defaults to `http://localhost:<PORT>/`. tunnel links are built from it, so a caller that reaches the instance at another address has to keep the tunnel's path and query and send them to that address.
 
 the URL from which your instance will be accessible. can be external or internal, but it must be a valid URL or else tunnels will not work.
 
 the value is a URL.
 
-### API_PORT
+### PORT
 port from which the API server will be accessible.
 
 the value is a number from 1024 to 65535.
