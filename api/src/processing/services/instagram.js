@@ -414,9 +414,18 @@ export default function instagram(obj) {
     }
 
     async function getPost(id, alwaysProxy) {
+        // a response that says "video" but carries no video url (instagram
+        // strips it from the public embed page for some reels) is not usable
+        // data: keep trying the other sources instead of returning the cover
+        const isVideoWithoutUrl = (data) => {
+            const gql = data?.gql_data?.shortcode_media || data?.gql_data?.xdt_shortcode_media;
+            if (gql) return !!gql.is_video && !gql.video_url;
+            return data?.media_type === 2 && !data?.video_versions;
+        };
         const hasData = (data) => data
                                     && data.gql_data !== null
-                                    && data?.gql_data?.xdt_shortcode_media !== null;
+                                    && data?.gql_data?.xdt_shortcode_media !== null
+                                    && !isVideoWithoutUrl(data);
         let data, result;
         try {
             const cookie = getCookie('instagram');
